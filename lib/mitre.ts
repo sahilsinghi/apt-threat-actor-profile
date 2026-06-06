@@ -31,6 +31,14 @@ let _actors: Actor[] | null = null;
 let _techniques: Map<string, Technique> | null = null;
 let _actorTechniqueMap: Map<string, string[]> | null = null;
 
+function cleanDescription(text: string): string {
+  return text
+    .replace(/\(Citation:[^)]+\)/g, "")   // remove (Citation: ...) blocks
+    .replace(/\[[^\]]+\]\([^)]+\)/g, (m) => m.replace(/\[([^\]]+)\]\([^)]+\)/, "$1")) // [text](url) -> text
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function getBundle(): StixBundle {
   if (_bundle) return _bundle;
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -55,10 +63,16 @@ function inferCountry(description: string, aliases: string[]): string {
 
 function inferMotivation(description: string, name: string): Actor["motivation"] {
   const text = (description + " " + name).toLowerCase();
-  if (text.includes("financial") || text.includes("money") || text.includes("profit") || text.includes("fraud") || text.includes("fin7") || text.includes("carbanak")) return "financial";
-  if (text.includes("hacktivism") || text.includes("activist") || text.includes("political statement")) return "hacktivism";
-  if (text.includes("destructive") || text.includes("wiper") || text.includes("sabotage") || text.includes("disruption") || text.includes("sandworm")) return "destruction";
-  if (text.includes("espionage") || text.includes("intelligence") || text.includes("state-sponsored") || text.includes("nation-state") || text.includes("apt")) return "espionage";
+  // Check financial first — most specific
+  if (text.includes("financial gain") || text.includes("financially motivated") || text.includes("fin7") || text.includes("carbanak") || text.includes("for profit")) return "financial";
+  // Hacktivism
+  if (text.includes("hacktivism") || text.includes("hacktivist") || text.includes("political statement")) return "hacktivism";
+  // Destruction — only match unambiguous destruction-intent signals, not "disruption" (used broadly)
+  if (text.includes("sandworm") || text.includes("wiper malware") || text.includes("destructive attack") || text.includes("physical destruction") || text.includes("sabotage critical")) return "destruction";
+  // Espionage — broad catch for state actors
+  if (text.includes("espionage") || text.includes("intelligence collection") || text.includes("state-sponsored") || text.includes("intelligence directorate") || text.includes("nation-state") || text.includes("apt")) return "espionage";
+  // Fallback destruction check
+  if (text.includes("destructive") || text.includes("wiper")) return "destruction";
   return "unknown";
 }
 
@@ -226,7 +240,7 @@ export function getAllActors(): Actor[] {
         targetRegions: extractTargetRegions(obj.description ?? ""),
         targetIndustries: extractTargetIndustries(obj.description ?? ""),
         techniqueIds: validTechIds,
-        description: obj.description ?? "",
+        description: cleanDescription(obj.description ?? ""),
         externalReferences: (obj.external_references ?? []).map((r) => ({
           sourceName: r.source_name,
           url: r.url,
