@@ -2,7 +2,7 @@
 
 > Generate polished APT threat actor dossiers from the MITRE ATT&CK Groups corpus.
 
-**Live demo:** _[add Vercel URL after deployment]_
+**Live demo:** https://apt-threat-actor-profiler.vercel.app
 
 ---
 
