@@ -23,10 +23,9 @@ import {
 
 interface DossierLayoutProps {
   actor: ActorWithTechniques;
-  hasApiKey: boolean;
 }
 
-export function DossierLayout({ actor, hasApiKey }: DossierLayoutProps) {
+export function DossierLayout({ actor }: DossierLayoutProps) {
   const router = useRouter();
   const [saved, setSaved] = useState(() => isDossierSaved(actor.id));
   const [copied, setCopied] = useState(false);
@@ -184,7 +183,7 @@ export function DossierLayout({ actor, hasApiKey }: DossierLayoutProps) {
       <TopTechniquesTable techniques={actor.techniques} />
       <IocFeed actorName={actor.name} />
       <RecommendedDetections techniques={actor.techniques} />
-      <ExecutiveSummary actor={actor} hasApiKey={hasApiKey} />
+      <ExecutiveSummary actor={actor} />
     </div>
   );
 }

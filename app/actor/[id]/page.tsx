@@ -26,7 +26,5 @@ export default async function ActorPage({ params }: Params) {
   const actor = getActorWithTechniques(id);
   if (!actor) notFound();
 
-  const hasApiKey = Boolean(process.env.ANTHROPIC_API_KEY);
-
-  return <DossierLayout actor={actor} hasApiKey={hasApiKey} />;
+  return <DossierLayout actor={actor} />;
 }

@@ -9,20 +9,25 @@ import { Loader2, Sparkles, RefreshCw, FileText } from "lucide-react";
 
 interface ExecutiveSummaryProps {
   actor: ActorWithTechniques;
-  hasApiKey: boolean;
 }
 
-export function ExecutiveSummary({ actor, hasApiKey }: ExecutiveSummaryProps) {
+export function ExecutiveSummary({ actor }: ExecutiveSummaryProps) {
   const [summary, setSummary] = useState<string>(() => generateTemplateSummary(actor));
   const [loading, setLoading] = useState(false);
   const [isAiGenerated, setIsAiGenerated] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   async function handleGenerateAI() {
     setLoading(true);
+    setFailed(false);
     try {
       const result = await generateExecutiveSummary(actor);
+      if (result === generateTemplateSummary(actor)) {
+        setFailed(true);
+      } else {
+        setIsAiGenerated(true);
+      }
       setSummary(result);
-      setIsAiGenerated(true);
     } finally {
       setLoading(false);
     }
@@ -31,6 +36,7 @@ export function ExecutiveSummary({ actor, hasApiKey }: ExecutiveSummaryProps) {
   function handleResetTemplate() {
     setSummary(generateTemplateSummary(actor));
     setIsAiGenerated(false);
+    setFailed(false);
   }
 
   const paragraphs = summary.split("\n\n").filter(Boolean);
@@ -58,21 +64,19 @@ export function ExecutiveSummary({ actor, hasApiKey }: ExecutiveSummaryProps) {
                   <FileText className="w-3 h-3" />
                   <span>Template</span>
                 </div>
-                {hasApiKey && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGenerateAI}
-                    disabled={loading}
-                    className="text-xs h-7 gap-1.5"
-                  >
-                    {loading ? (
-                      <><Loader2 className="w-3 h-3 animate-spin" />Generating...</>
-                    ) : (
-                      <><Sparkles className="w-3 h-3" />Generate AI Summary</>
-                    )}
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateAI}
+                  disabled={loading}
+                  className="text-xs h-7 gap-1.5"
+                >
+                  {loading ? (
+                    <><Loader2 className="w-3 h-3 animate-spin" />Generating...</>
+                  ) : (
+                    <><Sparkles className="w-3 h-3" />Generate AI Summary</>
+                  )}
+                </Button>
               </>
             )}
           </div>
@@ -82,9 +86,9 @@ export function ExecutiveSummary({ actor, hasApiKey }: ExecutiveSummaryProps) {
         {paragraphs.map((para, i) => (
           <p key={i} className="text-sm text-foreground leading-relaxed">{para}</p>
         ))}
-        {!hasApiKey && (
-          <p className="text-xs text-muted-foreground border-t border-border pt-3">
-            AI-generated summaries require an Anthropic API key configured in Vercel environment variables.
+        {failed && (
+          <p className="text-xs text-orange-600 border-t border-border pt-3">
+            AI summary unavailable — showing template summary. Check that ANTHROPIC_API_KEY is set in Vercel environment variables.
           </p>
         )}
       </CardContent>
