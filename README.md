@@ -6,6 +6,20 @@
 
 ---
 
+## Screenshots
+
+![Landing page](public/screenshots/landing.png)
+
+![Actor dossier](public/screenshots/dossier-hero.png)
+
+![TTP heatmap](public/screenshots/ttp-heatmap.png)
+
+![AI executive summary](public/screenshots/executive-summary.png)
+
+![Actor comparison](public/screenshots/comparison.png)
+
+---
+
 ## What It Does
 
 APT Profiler turns the MITRE ATT&CK Groups corpus into shareable, comparable intelligence dossiers. Select any of 159 documented APT groups and get a one-page profile — instantly.
@@ -135,8 +149,8 @@ SOC Lab       → validates detections for that actor's known TTPs
 - [x] Deep-linkable URLs (`/actor/G0007`)
 - [x] AI executive summary with templated fallback
 - [ ] Lighthouse Performance > 90, Accessibility > 95
-- [ ] Hero screenshot added
-- [ ] Live URL added above
+- [x] Hero screenshot added
+- [x] Live URL added above
 
 ---
 
