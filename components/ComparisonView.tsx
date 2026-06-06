@@ -18,10 +18,19 @@ interface ComparisonViewProps {
   actors: Pick<Actor, "id" | "name" | "aliases" | "country" | "motivation">[];
   initialA?: ActorWithTechniques;
   initialB?: ActorWithTechniques;
-  getActorData: (id: string) => ActorWithTechniques | undefined;
 }
 
-export function ComparisonView({ actors, initialA, initialB, getActorData }: ComparisonViewProps) {
+async function fetchActor(id: string): Promise<ActorWithTechniques | undefined> {
+  try {
+    const res = await fetch(`/api/actor/${id}`);
+    if (!res.ok) return undefined;
+    return await res.json();
+  } catch {
+    return undefined;
+  }
+}
+
+export function ComparisonView({ actors, initialA, initialB }: ComparisonViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [actorA, setActorA] = useState<ActorWithTechniques | undefined>(initialA);
@@ -29,20 +38,20 @@ export function ComparisonView({ actors, initialA, initialB, getActorData }: Com
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  function handleSelectA(id: string) {
-    const actor = getActorData(id);
-    setActorA(actor);
+  async function handleSelectA(id: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.set("a", id);
     router.replace(`/compare?${params.toString()}`);
+    const actor = await fetchActor(id);
+    setActorA(actor);
   }
 
-  function handleSelectB(id: string) {
-    const actor = getActorData(id);
-    setActorB(actor);
+  async function handleSelectB(id: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.set("b", id);
     router.replace(`/compare?${params.toString()}`);
+    const actor = await fetchActor(id);
+    setActorB(actor);
   }
 
   function handleShare() {

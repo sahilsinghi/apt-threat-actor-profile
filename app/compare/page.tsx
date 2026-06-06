@@ -21,17 +21,12 @@ export default async function ComparePage({ searchParams }: SearchParams) {
   const actorA = a ? getActorWithTechniques(a) : undefined;
   const actorB = b ? getActorWithTechniques(b) : undefined;
 
-  function getActorData(id: string) {
-    return getActorWithTechniques(id);
-  }
-
   return (
     <Suspense>
       <ComparisonView
         actors={actors}
         initialA={actorA}
         initialB={actorB}
-        getActorData={getActorData}
       />
     </Suspense>
   );
