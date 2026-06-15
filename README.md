@@ -148,7 +148,7 @@ SOC Lab       → validates detections for that actor's known TTPs
 - [x] PDF export (multi-page, client-side via jsPDF)
 - [x] Deep-linkable URLs (`/actor/G0007`)
 - [x] AI executive summary with templated fallback
-- [ ] Lighthouse Performance > 90, Accessibility > 95
+- [x] Lighthouse Performance 98 · Accessibility 100 · Best Practices 100 · SEO 100
 - [x] Hero screenshot added
 - [x] Live URL added above
 
